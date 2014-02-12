@@ -14,7 +14,7 @@ Below are the features of this PHP module:
 - Email notification of fraud orders
 - Mobile app notification of fraud orders
 
-This module requires API key to function. You may subscribe a free API key at http://www.fraudlabspro.com
+This module requires API key to function. You may subscribe a free API key at http://www.fraudlabspro.com/sign-up
 
 
 INSTALLATION
