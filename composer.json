@@ -1,0 +1,18 @@
+{
+    "name": "chrislim2888/fraudlabspro",
+    "description": "Fraud Prevention API to screen order transaction for online fraud. It helps to minimize fraud losses.",
+    "keywords": ["fraudlabs", "fraudlabspro", "fraud", "fraud detection", "fraud prevention"],
+    "homepage": "http://www.fraudlabspro.com",
+    "type": "library",
+    "license": "LGPLv3",
+    "autoload": {
+        "classmap": ["FraudLabsPro.class.php"]
+    },
+    "authors": [
+        {
+        "name": "FraudLabs Pro",
+        "email": "support@fraudlabspro.com",
+        "homepage": "http://www.fraudlabspro.com"
+        }
+    ]
+}

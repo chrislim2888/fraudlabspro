@@ -81,6 +81,15 @@ class FraudLabsPro {
 				$params .= '&format=json';
 		}
 
+		if (!is_null($this->flpRequest->firstName)){
+			$params .= '&first_name=' . rawurlencode($this->flpRequest->firstName);
+		}
+		
+		if (!is_null($this->flpRequest->lastName)){
+			$params .= '&bill_city=' . rawurlencode($this->flpRequest->lastName);
+		}
+
+
 		if (!is_null($this->flpRequest->billingCity)){
 			$params .= '&bill_city=' . rawurlencode($this->flpRequest->billingCity);
 		}
@@ -127,6 +136,7 @@ class FraudLabsPro {
 
 			//Prepare the email adomain and hash for checking
 			$params .= '&email_domain=' . rawurlencode(substr($this->flpRequest->emailAddress, strpos($this->flpRequest->emailAddress, '@')+1));
+			$params .= '&email=' . rawurlencode($this->flpRequest->emailAddress);
 			$params .= '&email_hash=' . rawurlencode($this->doHash($this->flpRequest->emailAddress));
 		}
 
@@ -192,6 +202,10 @@ class FraudLabsPro {
 		if (!is_null($this->flpRequest->sessionId)){
 			$params .= '&session_id=' . rawurlencode($this->flpRequest->sessionId);
 		}
+		
+		if (!is_null($this->flpRequest->flpChecksum)){
+			$params .= '&flp_checksum=' . rawurlencode($this->flpRequest->flpChecksum);
+		}
 
 		//Perform fraud check (3 tries on fails)
 		$retry = 0;
@@ -222,7 +236,47 @@ class FraudLabsPro {
 				return $result;
 		}
 	}
+	
+	///////////////////////////////////////
+	// Purpose: feedback the order status
+	// Input:
+	//	transactionID - transaction ID
+	//	action - APPROVE, REJECT
+	//	returnAs:	json - return json result
+	//				xml - return xml result
+	//
+	// Output:
+	//	Depend on the returnAs param
+	///////////////////////////////////////
+	public function feedbackOrder($transactionID, $action, $returnAs = 'json'){
+		// Perform validation (where applicable) and construct the REST queries
+		$params = 'key=' . $this->apiKey;
+		$params .= '&id=' . rawurlencode($transactionID);
+		
+		if (in_array($action, array('APPROVE', 'REJECT'))){
+			$params .= '&action=' . $action;
+		}
+		else
+			return NULL;
+			
+		if (in_array($returnAs, array('json', 'xml'))){
+			$params .= '&format=' . $returnAs;
+		}
+		else
+			return NULL;
+			
+		//Perform fraud check (3 tries on fails)
+		$retry = 0;
+		while($retry++ < 3){
+			$result = $this->http('https://api.fraudlabspro.com/v1/order/feedback?' . $params);
+			if($result) break;
+			sleep(2);
+		}
 
+		//Return value to caller
+		return $result;
+	}
+	
 	// List of ISO-3166 country codes for validation before sent
 	private function isCountryCode($cc){
 		if(!$cc) return false;
@@ -297,6 +351,10 @@ class Flp_Request{
 	public $department = NULL;
 	public $paymentMode = NULL;
 	public $sessionId = NULL;
+	public $lastName = NULL;
+	public $firstName = NULL;
+	public $flpChecksum = NULL;
+	
 
 	//Reset the variables
 	public function reset(){
@@ -326,6 +384,9 @@ class Flp_Request{
 		$this->department = NULL;
 		$this->paymentMode = NULL;
 		$this->sessionId = NULL;
+		$this->lastName = NULL;
+		$this->firstName = NULL;
+		$this->flpChecksum = NULL;
 	}
 }
 
